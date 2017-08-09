@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_go_game" default="compile.module.go_game">
+  <dirname property="module.go_game.basedir" file="${ant.file.module_go_game}"/>
+  
+  <property name="module.jdk.home.go_game" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.go_game" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.go_game" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.go_game" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="go_game.output.dir" value="${module.go_game.basedir}/../out"/>
+  <property name="go_game.testoutput.dir" value="${module.go_game.basedir}/../../../../../test/Go Game"/>
+  
+  <path id="go_game.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="go_game.module.production.classpath">
+    <path refid="${module.jdk.classpath.go_game}"/>
+    <pathelement location="${basedir}/lib/commons-cli-1.4.jar"/>
+    <pathelement location="${basedir}/lib/guava.jar"/>
+  </path>
+  
+  <path id="go_game.runtime.production.module.classpath">
+    <pathelement location="${go_game.output.dir}"/>
+    <pathelement location="${basedir}/lib/commons-cli-1.4.jar"/>
+    <pathelement location="${basedir}/lib/guava.jar"/>
+  </path>
+  
+  <path id="go_game.module.classpath">
+    <path refid="${module.jdk.classpath.go_game}"/>
+    <pathelement location="${go_game.output.dir}"/>
+    <pathelement location="${basedir}/lib/commons-cli-1.4.jar"/>
+    <pathelement location="${basedir}/lib/guava.jar"/>
+  </path>
+  
+  <path id="go_game.runtime.module.classpath">
+    <pathelement location="${go_game.testoutput.dir}"/>
+    <pathelement location="${go_game.output.dir}"/>
+    <pathelement location="${basedir}/lib/commons-cli-1.4.jar"/>
+    <pathelement location="${basedir}/lib/guava.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.go_game">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.go_game">
+    <patternset refid="excluded.from.module.go_game"/>
+  </patternset>
+  
+  <path id="go_game.module.sourcepath">
+    <dirset dir="${module.go_game.basedir}/../../Go Game">
+      <include name="src"/>
+      <include name="lib"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.go_game" depends="compile.module.go_game.production,compile.module.go_game.tests" description="Compile module Go Game"/>
+  
+  <target name="compile.module.go_game.production" depends="register.custom.compilers" description="Compile module Go Game; production classes">
+    <mkdir dir="${go_game.output.dir}"/>
+    <javac2 destdir="${go_game.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.go_game}/javac">
+      <compilerarg line="${compiler.args.go_game}"/>
+      <bootclasspath refid="go_game.module.bootclasspath"/>
+      <classpath refid="go_game.module.production.classpath"/>
+      <src refid="go_game.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.go_game"/>
+    </javac2>
+    
+    <copy todir="${go_game.output.dir}">
+      <fileset dir="${module.go_game.basedir}/../src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.go_game.basedir}/../lib">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.go_game.tests" depends="register.custom.compilers,compile.module.go_game.production" description="compile module Go Game; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.go_game" description="cleanup module">
+    <delete dir="${go_game.output.dir}"/>
+    <delete dir="${go_game.testoutput.dir}"/>
+  </target>
+</project>
